@@ -1,11 +1,43 @@
 import { Avatar, Box, Button, Checkbox, Container, FormControlLabel, Grid, Paper, TextField, Typography } from "@mui/material";
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
-import bimg from './himg3.jpeg';
-import {Link} from 'react-router-dom';
+import bimg from './himg3.png';
+import {Link, useNavigate} from 'react-router-dom';
 import Appbar from "./Appbar";
+import axios from 'axios';
+import { useRef, useState } from "react";
 const Signup=()=>{
-    const paperstyle={padding:20,height:'400px',width:300,margin:"0px auto",padding:"20px"}
+    const paperstyle={padding:20,height:'500px',width:300,margin:"0px auto",padding:"20px"}
     const avatarstyle={backgroundColor:'#6cdb0e'}
+    const nameref=useRef("");
+    const emailref=useRef("");
+    const passref=useRef();
+    const conpassref=useRef();
+    const navigate=useNavigate();
+    let checkpass=false;
+    const handlesubmit=(event)=>{
+        event.preventDefault();
+        if(passref.current.value===conpassref.current.value){
+            checkpass=true;
+        }
+        else{
+            checkpass=false;
+        }
+        if(checkpass){
+        axios.post("http://localhost:4300/users",{
+            name:nameref.current.value,
+            email:emailref.current.value,
+            password:passref.current.value,
+    
+        }).then(alert("Your Account created successfully."))
+        .catch();
+        navigate("/Login");
+    }
+    else{
+        alert("password did not match");
+    }
+    }
+
+
     return(
         <>
         
@@ -15,18 +47,23 @@ const Signup=()=>{
                     <Avatar style={avatarstyle}><PersonAddAltOutlinedIcon /></Avatar>
                     <h2 style={{ color: "black" }}>Sign up</h2>
                 </Grid>
-                <TextField label="UserName or Email" fullWidth required sx={{ color: "white" }} />
+                <form onSubmit={handlesubmit}>
+                <TextField inputRef={nameref} label="UserName" fullWidth required sx={{ color: "white" }} />
                 <br></br>
                 <br></br>
-                <TextField label="Password" type="password" fullWidth required sx={{ color: "white" }} />
+                <TextField inputRef={emailref} label="Email" type="email" fullWidth required sx={{ color: "white" }} />
                 <br></br>
                 <br></br>
-                <TextField label="Confirm-Password" type="password" fullWidth required sx={{ color: "white" }} />
+                <TextField inputRef={passref} label="Password" type="password" fullWidth required sx={{ color: "white" }} />
+                <br></br>
+                <br></br>
+                <TextField  inputRef={conpassref} label="Confirm-Password" type="password" fullWidth required sx={{ color: "white" }} />
                 <br></br>
                 <br></br>
                 <Button type="submit" color="primary" variant="contained" fullWidth>Sign up</Button>
                 <br></br>
                 <br></br>
+                </form>
                 <Typography>
                     Already have an account ?
                     <Link to="/Login">Sign In</Link>
